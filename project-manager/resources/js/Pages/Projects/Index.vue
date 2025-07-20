@@ -140,7 +140,7 @@ const getPhaseColorClass = (phase) => {
                                                     <ChevronDownIcon class="w-5 h-5" />
                                                 </button>
 
-<div v-if="project.showActions" class="origin-top-right absolute **right-0 left-auto** mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                                <div v-if="project.showActions" class="origin-top-right absolute **right-0 left-auto** mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                                                     <div class="py-1" role="none">
                                                         <button @click="openEditModal(project); project.showActions = false;" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1">
                                                             <PencilIcon class="w-4 h-4 inline-block mr-2" /> Editar
