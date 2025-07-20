@@ -5,7 +5,7 @@ import { ref } from 'vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { PlusIcon, MagnifyingGlassIcon, TrashIcon, PencilIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import { PlusIcon, MagnifyingGlassIcon, XCircleIcon, PencilIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import EditProjectModal from '@/Components/Modals/EditProjectModal.vue';
 import DeactivateProjectModal from '@/Components/Modals/DeactivateProjectModal.vue';
 
@@ -146,7 +146,7 @@ const getPhaseColorClass = (phase) => {
                                                             <PencilIcon class="w-4 h-4 inline-block mr-2" /> Editar
                                                         </button>
                                                         <button @click="openDeactivateModal(project); project.showActions = false;" class="text-red-600 dark:text-red-400 block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1" :disabled="!project.is_active">
-                                                            <TrashIcon class="w-4 h-4 inline-block mr-2" /> Desativar
+                                                            <XCircleIcon class="w-4 h-4 inline-block mr-2" /> Desativar
                                                         </button>
                                                     </div>
                                                 </div>
