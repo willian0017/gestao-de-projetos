@@ -13,13 +13,39 @@ class ProjectController extends Controller
     /**
      * Listagem.
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
 
-        $projects = Project::where('user_id', $user->id)
-            ->orWhereHas('users', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+        $filters = $request->only(['title', 'client_name', 'phase', 'status']);
+
+        $statusFilter = $filters['status'] ?? 'active';
+
+        $projects = Project::query()
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id) 
+                    ->orWhereHas('users', function ($query) use ($user) {
+                        $query->where('user_id', $user->id);
+                    });
+            })
+
+            ->when($filters['title'] ?? null, function ($query, $title) {
+                $query->where('title', 'like', '%' . $title . '%');
+            })
+
+            ->when($filters['client_name'] ?? null, function ($query, $clientName) {
+                $query->where('client_name', 'like', '%' . $clientName . '%');
+            })
+
+            ->when($filters['phase'] ?? null, function ($query, $phase) {
+                $query->where('phase', $phase);
+            })
+
+            ->when($statusFilter === 'active', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->when($statusFilter === 'inactive', function ($query) {
+                $query->where('is_active', false);
             })
             ->with('creator', 'users')
             ->orderBy('created_at', 'desc')
@@ -28,6 +54,7 @@ class ProjectController extends Controller
         return Inertia::render('Projects/Index', [
             'projects' => $projects,
             'users' => User::select('id', 'name')->get(),
+            'filters' => $filters,
         ]);
     }
 
