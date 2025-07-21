@@ -8,6 +8,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { PlusIcon, MagnifyingGlassIcon, XCircleIcon, PencilIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import EditProjectModal from '@/Components/Modals/EditProjectModal.vue';
 import DeactivateProjectModal from '@/Components/Modals/DeactivateProjectModal.vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     projects: Array,
@@ -46,16 +47,20 @@ const openDeactivateModal = (project) => {
     showDeactivateModal.value = true;
 };
 
+const softReload = router.visit(route('projects.index'), { 
+    preserveScroll: true, preserveState: true, replace: true 
+});
+
 const handleProjectUpdated = () => {
     showEditModal.value = false;
     selectedProject.value = null;
-    window.location.reload();
+    softReload;
 };
 
 const handleProjectDeactivated = () => {
     showDeactivateModal.value = false;
     selectedProject.value = null;
-    window.location.reload();
+    softReload;
 };
 
 const getPhaseColorClass = (phase) => {
