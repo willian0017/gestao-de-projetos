@@ -26,6 +26,9 @@ const filterForm = useForm({
 const phases = ['Planejamento', 'Desenvolvimento', 'Testes', 'Concluído', 'Em Pausa'];
 const statuses = [{ label: 'Ativo', value: 'active' }, { label: 'Inativo', value: 'inactive' }];
 
+const showPhaseDropdown = ref(false);
+const showStatusDropdown = ref(false);
+
 const applyFilters = () => {
     filterForm.get(route('projects.index'), {
         preserveState: true,
@@ -47,20 +50,22 @@ const openDeactivateModal = (project) => {
     showDeactivateModal.value = true;
 };
 
-const softReload = router.visit(route('projects.index'), { 
-    preserveScroll: true, preserveState: true, replace: true 
-});
+const softReload = () => {
+    router.visit(route('projects.index'), {
+        preserveScroll: true, preserveState: true, replace: true
+    });
+};
 
 const handleProjectUpdated = () => {
     showEditModal.value = false;
     selectedProject.value = null;
-    softReload;
+    softReload();
 };
 
 const handleProjectDeactivated = () => {
     showDeactivateModal.value = false;
     selectedProject.value = null;
-    softReload;
+    softReload();
 };
 
 const getPhaseColorClass = (phase) => {
@@ -86,7 +91,7 @@ const getPhaseColorClass = (phase) => {
 
         <div class="py-12">
             <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 dark:text-gray-100">
 
                         <div class="mb-6 border border-gray-200 dark:border-gray-700 p-4 rounded-lg bg-gray-50 dark:bg-gray-700">
@@ -100,18 +105,36 @@ const getPhaseColorClass = (phase) => {
                                     <InputLabel for="filter_client" value="Cliente" class="text-gray-700 dark:text-gray-300"/>
                                     <TextInput id="filter_client" type="text" class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" v-model="filterForm.client_name" />
                                 </div>
-                                <div>
-                                    <InputLabel for="filter_phase" value="Fase" class="text-gray-700 dark:text-gray-300"/>
-                                    <select id="filter_phase" class="border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" v-model="filterForm.phase">
-                                        <option value="">Todas as Fases</option>
-                                        <option v-for="phaseOption in phases" :key="phaseOption" :value="phaseOption">{{ phaseOption }}</option>
-                                    </select>
+
+                                <div class="relative">
+                                    <InputLabel for="filter_phase_custom" value="Fase" class="text-gray-700 dark:text-gray-300"/>
+                                    <button type="button" @click="showPhaseDropdown = !showPhaseDropdown" class="mt-1 block w-full text-left py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                        {{ filterForm.phase || 'Todas as Fases' }}
+                                        <ChevronDownIcon class="w-4 h-4 inline-block float-right mt-1 text-gray-500 dark:text-gray-400" />
+                                    </button>
+                                    <div v-if="showPhaseDropdown" class="absolute z-40 mt-1 w-full rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto">
+                                        <div class="py-1">
+                                            <button @click="filterForm.phase = ''; showPhaseDropdown = false;" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Todas as Fases</button>
+                                            <button v-for="phaseOption in phases" :key="phaseOption" @click="filterForm.phase = phaseOption; showPhaseDropdown = false;" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                {{ phaseOption }}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <InputLabel for="filter_status" value="Status" class="text-gray-700 dark:text-gray-300"/>
-                                    <select id="filter_status" class="border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100" v-model="filterForm.status">
-                                        <option v-for="statusOption in statuses" :key="statusOption.value" :value="statusOption.value">{{ statusOption.label }}</option>
-                                    </select>
+
+                                <div class="relative">
+                                    <InputLabel for="filter_status_custom" value="Status" class="text-gray-700 dark:text-gray-300"/>
+                                    <button type="button" @click="showStatusDropdown = !showStatusDropdown" class="mt-1 block w-full text-left py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                        {{ statuses.find(s => s.value === filterForm.status)?.label || 'Ativo' }}
+                                        <ChevronDownIcon class="w-4 h-4 inline-block float-right mt-1 text-gray-500 dark:text-gray-400" />
+                                    </button>
+                                    <div v-if="showStatusDropdown" class="absolute z-40 mt-1 w-full rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto">
+                                        <div class="py-1">
+                                            <button v-for="statusOption in statuses" :key="statusOption.value" @click="filterForm.status = statusOption.value; showStatusDropdown = false;" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                                {{ statusOption.label }}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex justify-end mt-4 space-x-2">
@@ -145,7 +168,7 @@ const getPhaseColorClass = (phase) => {
                                                     <ChevronDownIcon class="w-5 h-5" />
                                                 </button>
 
-                                                <div v-if="project.showActions" class="origin-top-right absolute **right-0 left-auto** mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none z-10" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                                                <div v-if="project.showActions" class="origin-top-right absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none z-50" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
                                                     <div class="py-1" role="none">
                                                         <button @click="openEditModal(project); project.showActions = false;" class="text-gray-700 dark:text-gray-200 block px-4 py-2 text-sm w-full text-left hover:bg-gray-100 dark:hover:bg-gray-600" role="menuitem" tabindex="-1">
                                                             <PencilIcon class="w-4 h-4 inline-block mr-2" /> Editar
