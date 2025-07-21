@@ -1,16 +1,34 @@
 <script setup>
-import { ref } from 'vue';
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
-import NavLink from '@/Components/NavLink.vue';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { onMounted, ref } from "vue";
+import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import Dropdown from "@/Components/Dropdown.vue";
+import DropdownLink from "@/Components/DropdownLink.vue";
+import NavLink from "@/Components/NavLink.vue";
+import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
+import { Link, usePage } from "@inertiajs/vue3";
 
 const showingNavigationDropdown = ref(false);
+const page = usePage();
+const flashSuccess = ref(page.props.flash.success ?? null);
+
+onMounted(() => {
+    if (flashSuccess.value) {
+        setTimeout(() => {
+            flashSuccess.value = null;
+        }, 3000);
+    }
+});
 </script>
 
 <template>
+    <transition name="fade">
+        <div
+            v-if="$page.props.flash?.success"
+            class="fixed top-4 left-1/2 z-50 w-auto max-w-sm -translate-x-1/2 transform rounded-md border border-green-300 bg-green-100 px-4 py-2 text-sm text-green-800 shadow-md dark:border-green-700 dark:bg-green-900 dark:text-green-100"
+        >
+            {{ $page.props.flash.success }}
+        </div>
+    </transition>
     <div>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav
@@ -30,15 +48,17 @@ const showingNavigationDropdown = ref(false);
                             </div>
 
                             <!-- Navigation Links -->
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
+                            >
                                 <NavLink
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
                                 >
                                     Dashboard
                                 </NavLink>
-                                <NavLink 
-                                    :href="route('projects.index')" 
+                                <NavLink
+                                    :href="route('projects.index')"
                                     :active="route().current('projects.index')"
                                 >
                                     Projetos
@@ -206,3 +226,14 @@ const showingNavigationDropdown = ref(false);
         </div>
     </div>
 </template>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

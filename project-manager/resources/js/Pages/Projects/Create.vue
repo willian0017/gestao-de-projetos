@@ -8,6 +8,9 @@ import { ChevronLeftIcon, CheckIcon } from "@heroicons/vue/24/solid";
 import SuccessButton from "@/Components/SuccessButton.vue";
 import Multiselect from "vue-multiselect";
 import "vue-multiselect/dist/vue-multiselect.min.css";
+import { ref } from "vue";
+
+const showPhaseDropdown = ref(false);
 
 const props = defineProps({
     users: Array,
@@ -41,6 +44,7 @@ const phases = [
     "Concluído",
     "Em Pausa",
 ];
+
 </script>
 
 <template>
@@ -102,33 +106,20 @@ const phases = [
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                            <div>
-                                <InputLabel
-                                    for="phase"
-                                    value="Fase do Projeto"
-                                    class="text-gray-700 dark:text-gray-300"
-                                />
-                                <select
-                                    id="phase"
-                                    class="border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
-                                    v-model="form.phase"
-                                    required
-                                >
-                                    <option value="" disabled selected>
-                                        Selecione uma fase
-                                    </option>
-                                    <option
-                                        v-for="phaseOption in phases"
-                                        :key="phaseOption"
-                                        :value="phaseOption"
-                                    >
-                                        {{ phaseOption }}
-                                    </option>
-                                </select>
-                                <InputError
-                                    class="mt-2"
-                                    :message="form.errors.phase"
-                                />
+                            <div class="relative">
+                                <InputLabel for="filter_phase_custom" value="Fase" class="text-gray-700 dark:text-gray-300"/>
+                                <button type="button" @click="showPhaseDropdown = !showPhaseDropdown" class="mt-1 block w-full text-left py-2 px-3 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    {{ form.phase || 'Todas as Fases' }}
+                                    <ChevronDownIcon class="w-4 h-4 inline-block float-right mt-1 text-gray-500 dark:text-gray-400" />
+                                </button>
+                                <div v-if="showPhaseDropdown" class="absolute z-40 mt-1 w-full rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 focus:outline-none max-h-60 overflow-y-auto">
+                                    <div class="py-1">
+                                        <button @click="form.phase = ''; showPhaseDropdown = false;" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">Todas as Fases</button>
+                                        <button v-for="phaseOption in phases" :key="phaseOption" @click="form.phase = phaseOption; showPhaseDropdown = false;" class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+                                            {{ phaseOption }}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
