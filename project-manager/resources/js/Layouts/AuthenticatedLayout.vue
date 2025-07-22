@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref, watch } from "vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
@@ -11,22 +11,27 @@ const showingNavigationDropdown = ref(false);
 const page = usePage();
 const flashSuccess = ref(page.props.flash.success ?? null);
 
-onMounted(() => {
-    if (flashSuccess.value) {
-        setTimeout(() => {
-            flashSuccess.value = null;
-        }, 3000);
-    }
-});
+watch(
+    () => page.props.flash.success,
+    (newVal) => {
+        if (newVal) {
+            flashSuccess.value = newVal;
+            setTimeout(() => {
+                flashSuccess.value = null;
+            }, 3000);
+        }
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
     <transition name="fade">
         <div
-            v-if="$page.props.flash?.success"
+            v-if="flashSuccess"
             class="fixed top-4 left-1/2 z-50 w-auto max-w-sm -translate-x-1/2 transform rounded-md border border-green-300 bg-green-100 px-4 py-2 text-sm text-green-800 shadow-md dark:border-green-700 dark:bg-green-900 dark:text-green-100"
         >
-            {{ $page.props.flash.success }}
+            {{ flashSuccess }}
         </div>
     </transition>
     <div>
