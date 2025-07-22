@@ -20,7 +20,7 @@ import { Link } from "@inertiajs/vue3";
         </div>
 
         <div
-            class="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg dark:bg-gray-800"
+            class="mt-6 w-full sm:max-w-md px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg relative z-20"
         >
             <slot />
         </div>
